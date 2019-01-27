@@ -25,7 +25,7 @@ class Achievements extends Controller
 
     protected function _pageTitle()
     {
-        return _t('Achievements');
+        return _t('Achievements') . ' - ' . $this->_mainEventRules->eventTitle();
     }
 
     protected function _run()
@@ -38,7 +38,7 @@ class Achievements extends Controller
 
         $achievements = null;
         try {
-            $achievements = $this->_api->execute('getAchievements', [$this->_eventIdList]);
+            $achievements = $this->_mimir->execute('getAchievements', [$this->_eventIdList]);
         } catch (Exception $e) {
             return [
                 'error' => $e->getMessage()
