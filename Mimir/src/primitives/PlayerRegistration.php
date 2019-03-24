@@ -19,6 +19,7 @@ namespace Mimir;
 
 require_once __DIR__ . '/../Primitive.php';
 require_once __DIR__ . '/Player.php';
+require_once __DIR__ . '/../FreyClient.php';
 
 /**
  * Class PlayerRegistrationPrimitive
@@ -326,11 +327,12 @@ class PlayerRegistrationPrimitive extends Primitive
 
     /**
      * @param IDb $db
+     * @param FreyClient $frey
      * @param $eventId
      * @return PlayerPrimitive[]
      * @throws \Exception
      */
-    public static function findRegisteredPlayersByEvent(IDb $db, $eventId)
+    public static function findRegisteredPlayersByEvent(IDb $db, FreyClient $frey, $eventId)
     {
         $ids = array_map(function ($el) {
             return $el['id'];
@@ -340,7 +342,7 @@ class PlayerRegistrationPrimitive extends Primitive
             return [];
         }
 
-        return PlayerPrimitive::findById($db, $ids);
+        return PlayerPrimitive::findById($frey, $ids);
     }
 
     /**
@@ -349,7 +351,7 @@ class PlayerRegistrationPrimitive extends Primitive
      * @return PlayerPrimitive[]
      * @throws \Exception
      */
-    public static function findRegisteredPlayersByEventList(IDb $db, $eventIdList)
+    public static function findRegisteredPlayersByEventList(IDb $db, FreyClient $frey, $eventIdList)
     {
         $ids = array_map(function ($el) {
             return $el['id'];
@@ -359,7 +361,7 @@ class PlayerRegistrationPrimitive extends Primitive
             return [];
         }
 
-        return PlayerPrimitive::findById($db, $ids);
+        return PlayerPrimitive::findById($frey, $ids);
     }
 
     /**
