@@ -1,5 +1,4 @@
 <?php
-
 /*  Rheda: visualizer and control panel
  *  Copyright (C) 2016  o.klimenko aka ctizen
  *
@@ -16,33 +15,11 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace Rheda;
 
-if (file_exists(__DIR__ . '/local/index.php')) {
-    include __DIR__ . '/local/index.php';
-} else {
-    class Sysconf
-    {
-        const DEBUG_MODE_COOKIE_LIFE = 86400;
+// TODO: generate this and all other such files dynamically from some unviersal source.
 
-        // Common settings
-        const API_VERSION_MAJOR = 1;
-        const API_VERSION_MINOR = 0;
-        const DEBUG_MODE = true; // TODO -> to false in prod!
-
-        const COOKIE_TOKEN_KEY = 'authToken';
-        const COOKIE_ID_KEY = 'currentPersonId';
-        const COOKIE_EVENT_KEY = 'currentEventId';
-
-        public static function API_URL() {
-            return getenv('MIMIR_URL');
-        }
-
-        public static function AUTH_API_URL() {
-            return getenv('FREY_URL');
-        }
-    }
+class AccessRules {
+    const ADD_USER = 'add_user';
+    const ADMIN_EVENT = 'admin_event';
 }
-
-

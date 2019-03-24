@@ -16,6 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace Frey;
+
+// TODO: generate this and all other such files dynamically from some unviersal source.
+
 class AccessRules {
     const ADD_USER = 'add_user';
+    const ADMIN_EVENT = 'admin_event';
 }
