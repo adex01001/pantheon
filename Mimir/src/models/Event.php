@@ -43,16 +43,16 @@ class EventModel extends Model
      */
     public function getCurrentSeating($eventId)
     {
-        $event = EventPrimitive::findById($this->_db, [$eventId]);
+        $event = EventPrimitive::findById($this->_ds, [$eventId]);
         if (empty($event)) {
             throw new InvalidParametersException('Event id#' . $eventId . ' not found in DB');
         }
         $startRating = $event[0]->getRuleset()->startRating();
 
         // get data from primitives, and some raw data
-        $reggedPlayers = PlayerRegistrationPrimitive::findRegisteredPlayersIdsByEvent($this->_db, $eventId);
-        $historyItems = PlayerHistoryPrimitive::findLastByEvent($this->_db, $eventId);
-        $seatings = $this->_db->table('session_player')
+        $reggedPlayers = PlayerRegistrationPrimitive::findRegisteredPlayersIdsByEvent($this->_ds, $eventId);
+        $historyItems = PlayerHistoryPrimitive::findLastByEvent($this->_ds, $eventId);
+        $seatings = $this->_ds->table('session_player')
             ->join('session', 'session.id = session_player.session_id')
             ->join('player', 'player.id = session_player.player_id')
             ->select('session_player.order')
@@ -92,10 +92,10 @@ class EventModel extends Model
      */
     public function getTablesState($eventId, $includeAllRounds = false)
     {
-        $reggedPlayers = PlayerRegistrationPrimitive::findRegisteredPlayersIdsByEvent($this->_db, $eventId);
+        $reggedPlayers = PlayerRegistrationPrimitive::findRegisteredPlayersIdsByEvent($this->_ds, $eventId);
         $tablesCount = count($reggedPlayers) / 4;
 
-        $lastGames = SessionPrimitive::findByEventAndStatus($this->_db, $eventId, [
+        $lastGames = SessionPrimitive::findByEventAndStatus($this->_ds, $eventId, [
             SessionPrimitive::STATUS_FINISHED,
             SessionPrimitive::STATUS_INPROGRESS,
             SessionPrimitive::STATUS_PREFINISHED
@@ -110,7 +110,7 @@ class EventModel extends Model
      */
     public function getGlobalTablesState()
     {
-        $games = SessionPrimitive::findAllInProgress($this->_db);
+        $games = SessionPrimitive::findAllInProgress($this->_ds);
         return $this->_formatTablesState($games, []);
     }
 
@@ -123,7 +123,7 @@ class EventModel extends Model
      */
     public function getPrescriptedConfig($eventId)
     {
-        $prescript = EventPrescriptPrimitive::findByEventId($this->_db, [$eventId]);
+        $prescript = EventPrescriptPrimitive::findByEventId($this->_ds, [$eventId]);
         if (empty($prescript)) {
             return [
                 'event_id' => $eventId,
@@ -135,7 +135,7 @@ class EventModel extends Model
             ];
         }
 
-        $regData = PlayerRegistrationPrimitive::findLocalIdsMapByEvent($this->_db, $eventId);
+        $regData = PlayerRegistrationPrimitive::findLocalIdsMapByEvent($this->_ds, $eventId);
 
         return [
             'event_id' => $eventId,
@@ -156,10 +156,10 @@ class EventModel extends Model
      */
     public function updatePrescriptedConfig($eventId, $nextSessionIndex, $prescriptText)
     {
-        $prescript = EventPrescriptPrimitive::findByEventId($this->_db, [$eventId]);
+        $prescript = EventPrescriptPrimitive::findByEventId($this->_ds, [$eventId]);
         if (empty($prescript)) {
             $prescript = [
-                (new EventPrescriptPrimitive($this->_db))
+                (new EventPrescriptPrimitive($this->_ds))
                     ->setEventId($eventId)
             ];
         }
@@ -186,7 +186,7 @@ class EventModel extends Model
         }
 
         foreach ($lastGames as $game) {
-            $rounds = RoundPrimitive::findBySessionIds($this->_db, [$game->getId()]);
+            $rounds = RoundPrimitive::findBySessionIds($this->_ds, [$game->getId()]);
             /** @var MultiRoundPrimitive $lastRound */
             $lastRound = MultiRoundHelper::findLastRound($rounds);
 
@@ -242,14 +242,14 @@ class EventModel extends Model
     }
 
     /**
-     * @param FreyClient $frey
+     * @param DataSource $ds
      * @param SessionPrimitive[] $games
      * @throws \Exception
      * @return array
      */
-    public static function getPlayersOfGames(FreyClient $frey, $games)
+    public static function getPlayersOfGames(DataSource $ds, $games)
     {
-        $players = PlayerPrimitive::findById($frey, array_reduce($games, function ($acc, SessionPrimitive $el) {
+        $players = PlayerPrimitive::findById($ds, array_reduce($games, function ($acc, SessionPrimitive $el) {
             return array_merge($acc, $el->getPlayersIds());
         }, []));
 
@@ -270,6 +270,7 @@ class EventModel extends Model
      *
      * @param $limit
      * @param $offset
+     * @throws \Exception
      * @return array
      */
     public function getAllEvents($limit, $offset)
@@ -278,9 +279,9 @@ class EventModel extends Model
             $limit = 100;
         }
 
-        $count = $this->_db->table('event')->count();
+        $count = $this->_ds->table('event')->count();
 
-        $data = $this->_db->table('event')
+        $data = $this->_ds->table('event')
             ->select('id')
             ->select('title')
             ->select('description')
