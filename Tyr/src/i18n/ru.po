@@ -505,3 +505,7 @@ msgstr "Ренхо"
 #: src/app/primitives/yaku.ts:334:34 src/app/primitives/yaku.ts:335:39
 msgid "Open riichi"
 msgstr "Опен риичи"
+
+#: src/app/components/auxiliary-i18n/index.ts:133:12
+msgid "Hello unauthorized user!"
+msgstr "Привет, неавторизованный юзер!"

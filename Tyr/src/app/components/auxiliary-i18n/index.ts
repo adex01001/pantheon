@@ -129,4 +129,7 @@ export class I18nComponent {
   get _USER_ACTIONS() {
     return this.i18n._t('User actions');
   }
+  get _GREETING() {
+    return this.i18n._t('Hello unauthorized user!');
+  }
 }
