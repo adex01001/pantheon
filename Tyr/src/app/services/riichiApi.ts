@@ -54,88 +54,83 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class RiichiApiService {
-  private _authToken: string = null;
   constructor(private http: Http) { }
-  setCredentials(token: string) {
-    this._authToken = token;
-  }
 
   // TODO: formatters
 
   // returns game hashcode
   startGame(playerIds: number[]) {
-    return this._jsonRpcRequest<string>('startGameT', playerIds);
+    return this._jsonRpcRequest<string>('startGameT', environment.apiUrl, playerIds);
   }
 
   getGameConfig() {
-    return this._jsonRpcRequest<RGameConfig>('getGameConfigT')
+    return this._jsonRpcRequest<RGameConfig>('getGameConfigT', environment.apiUrl)
       .then<LGameConfig>(gameConfigFormatter);
   }
 
   getTimerState() {
-    return this._jsonRpcRequest<RTimerState>('getTimerStateT')
+    return this._jsonRpcRequest<RTimerState>('getTimerStateT', environment.apiUrl)
       .then<LTimerState>(timerFormatter);
   }
 
   getLastResults() {
-    return this._jsonRpcRequest<RLastResults>('getLastResultsT')
+    return this._jsonRpcRequest<RLastResults>('getLastResultsT', environment.apiUrl)
       .then<LUserWithScore[]>(lastResultsFormatter);
   }
 
   getAllPlayers() {
-    return this._jsonRpcRequest<RAllPlayersInEvent>('getAllPlayersT')
+    return this._jsonRpcRequest<RAllPlayersInEvent>('getAllPlayersT', environment.apiUrl)
       .then<LUser[]>(userListFormatter);
   }
 
   getGameOverview(sessionHashcode: string) {
-    return this._jsonRpcRequest<RSessionOverview>('getGameOverview', sessionHashcode);
+    return this._jsonRpcRequest<RSessionOverview>('getGameOverview', environment.apiUrl, sessionHashcode);
   }
 
   getCurrentGames(): Promise<LCurrentGame[]> {
-    return this._jsonRpcRequest<RCurrentGames>('getCurrentGamesT')
+    return this._jsonRpcRequest<RCurrentGames>('getCurrentGamesT', environment.apiUrl)
       .then<LCurrentGame[]>(currentGamesFormatter);
   }
 
-  getUserInfo() {
-    return this._jsonRpcRequest<RUserInfo>('getPlayerT')
+  getUserInfo(personIds: number) {
+    return this._jsonRpcRequest<RUserInfo[]>('getPersonalInfo', environment.freyUrl, [personIds])
       .then<LUser>(userInfoFormatter);
   }
 
   confirmRegistration(pin: string) {
-    return this._jsonRpcRequest<string>('registerPlayer', pin);
+    return this._jsonRpcRequest<string>('registerPlayer', environment.apiUrl, pin);
   }
 
   getChangesOverview(state: AppState) {
     const gameHashcode: string = state.getHashcode();
     const roundData = formatRoundToRemote(state);
-    return this._jsonRpcRequest<RRoundPaymentsInfo>('addRound', gameHashcode, roundData, true);
+    return this._jsonRpcRequest<RRoundPaymentsInfo>('addRound', environment.apiUrl, gameHashcode, roundData, true);
   }
 
   getLastRound(sessionHashcode?: string) {
     if (!sessionHashcode) {
-      return this._jsonRpcRequest<RRoundPaymentsInfo>('getLastRoundT');
+      return this._jsonRpcRequest<RRoundPaymentsInfo>('getLastRoundT', environment.apiUrl);
     } else {
-      return this._jsonRpcRequest<RRoundPaymentsInfo>('getLastRoundByHash', sessionHashcode);
+      return this._jsonRpcRequest<RRoundPaymentsInfo>('getLastRoundByHash', environment.apiUrl, sessionHashcode);
     }
   }
 
   addRound(state: AppState) {
     const gameHashcode: string = state.getHashcode();
     const roundData = formatRoundToRemote(state);
-    return this._jsonRpcRequest<boolean>('addRound', gameHashcode, roundData, false);
+    return this._jsonRpcRequest<boolean>('addRound', environment.apiUrl, gameHashcode, roundData, false);
   }
 
   getTablesState() {
-    return this._jsonRpcRequest<RTablesState>('getTablesStateT')
+    return this._jsonRpcRequest<RTablesState>('getTablesStateT', environment.apiUrl)
       .then<Table[]>(tablesStateFormatter);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
 
-  private _jsonRpcRequest<RET_TYPE>(methodName: string, ...params: any[]): Promise<RET_TYPE> {
+  private _jsonRpcRequest<RET_TYPE>(methodName: string, requestUrl: string, ...params: any[]): Promise<RET_TYPE> {
     const commonHeaders = new Headers({
       'Content-type': 'application/json',
-      'X-Auth-Token': this._authToken,
       'X-Api-Version': config.apiVersion.map((v) => v.toString()).join('.')
     });
     const jsonRpcBody = {
@@ -146,7 +141,7 @@ export class RiichiApiService {
     };
 
     return this.http
-      .post(environment.apiUrl, jsonRpcBody, { headers: commonHeaders })
+      .post(requestUrl, jsonRpcBody, { headers: commonHeaders })
       .toPromise()
       .then<RET_TYPE>((response) => {
         this._checkCompatibility(response.headers.get('x-api-version')); // for some reason headers are lowercase

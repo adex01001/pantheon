@@ -21,6 +21,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:4001',
+  freyUrl: 'http://localhost:4004',
   guiFix: (src: string) => src,
   keyPrefix: 'tyr',
   cookieDomain: null, // when working on localhost this must be omitted!

@@ -23,7 +23,7 @@ export class IDB implements IDBImpl {
 
   constructor(private metrika: MetrikaService) {
     // Assume we always have at least cookies.
-    this.cookieEngine = new IDBCookieImpl(environment.keyPrefix, environment.cookieDomain);
+    this.cookieEngine = new IDBCookieImpl(environment.cookieDomain);
     this.activeStorages.push(this.cookieEngine);
 
     try { // check is local storage is sane
@@ -33,7 +33,7 @@ export class IDB implements IDBImpl {
         throw new Error();
       }
       localStorage.removeItem('testStorageItem');
-      this.storageEngine = new IDBStorageImpl(environment.keyPrefix);
+      this.storageEngine = new IDBStorageImpl();
       this.activeStorages.push(this.storageEngine);
 
       this.migrate();

@@ -41,13 +41,12 @@ export function timerFormatter(timer: RTimerState): LTimerState {
   };
 }
 
-export function userInfoFormatter(user: RUserInfo): LUser {
+export function userInfoFormatter(users: RUserInfo[]): LUser {
+  const user = users[0];
   return {
     id: parseInt(user.id.toString(), 10),
-    displayName: user.display_name,
-    alias: user.alias,
+    displayName: user.title,
     tenhouId: user.tenhou_id,
-    ident: user.ident
   };
 }
 
@@ -120,7 +119,6 @@ export function gameConfigFormatter(config: RGameConfig): LGameConfig {
 export function currentGamesFormatter(games: RCurrentGames): LCurrentGame[] {
   const formatPlayer = (player): Player => ({
     id: parseInt(player.id, 10),
-    alias: player.alias,
     displayName: player.display_name,
     score: player.score,
     penalties: 0, // TODO?

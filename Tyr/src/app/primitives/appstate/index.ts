@@ -86,7 +86,7 @@ export class AppState {
 
   // preloaders flags
   private _loading: LoadingSet = {
-    games: true,
+    games: false,
     overview: false,
     otherTables: false,
     otherTable: false,
@@ -129,20 +129,32 @@ export class AppState {
   }
 
   reinit() {
-    this.api.setCredentials(this.storage.get('authToken'));
-    this._isLoggedIn = !!this.storage.get('authToken');
+    this._isLoggedIn = !!this.storage.get('authToken') && !!this.storage.get('currentPersonId');
     if (!this._isLoggedIn) {
-      // this._currentScreen = 'login';
       this._currentScreen = 'greeting';
     } else {
       this._currentScreen = 'overview';
-      this.updateCurrentGames();
+      this.updateCurrentPlayer();
+      if (!!this.storage.get('currentEventId')) {
+        this.updateCurrentGames();
+      }
     }
   }
 
   logout() {
     this.storage.delete(['authToken']);
     this.reinit();
+  }
+
+  updateCurrentPlayer() {
+    const promise: Promise<LUser> = this.api.getUserInfo(this.storage.get('currentPersonId'));
+
+    promise.then((playerInfo) => {
+      this._currentPlayerDisplayName = playerInfo.displayName;
+      this._currentPlayerId = playerInfo.id;
+
+      this.metrika.setUserId(playerInfo.id);
+    });
   }
 
   updateCurrentGames() {
@@ -157,21 +169,17 @@ export class AppState {
 
     this._loading.games = true;
     // TODO: automate promises creation from mixins
-    const promises: [Promise<LCurrentGame[]>, Promise<LUser>, Promise<LGameConfig>, Promise<LTimerState>] = [
+    const promises: [Promise<LCurrentGame[]>, Promise<LGameConfig>, Promise<LTimerState>] = [
       this.api.getCurrentGames(),
-      this.api.getUserInfo(),
       this.api.getGameConfig(),
       this.api.getTimerState()
     ];
 
-    Promise.all(promises).then(([games, playerInfo, gameConfig, timerState]) => {
-      this._currentPlayerDisplayName = playerInfo.displayName;
-      this._currentPlayerId = playerInfo.id;
+    Promise.all(promises).then(([games, gameConfig, timerState]) => {
       this._gameConfig = gameConfig;
       initYaku(this._gameConfig.withMultiYakumans);
 
       this.metrika.track(MetrikaService.CONFIG_RECEIVED);
-      this.metrika.setUserId(playerInfo.id);
 
       if (games.length > 0) {
         // TODO: what if games > 1 ? Now it takes first one
@@ -401,7 +409,12 @@ export class AppState {
       case 'otherTablesList':
       case 'settings':
       case 'newGame':
-        this._currentScreen = 'overview';
+        if (this._isLoggedIn) {
+          this._currentScreen = 'overview';
+        }
+        else {
+          this._currentScreen = 'greeting';
+        }
         break;
       case 'playersSelect':
         if (this._currentOutcome.selectedOutcome === 'nagashi') {

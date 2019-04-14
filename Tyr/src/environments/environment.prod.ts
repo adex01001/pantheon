@@ -48,6 +48,7 @@ switch (window.location.host) {
 export const environment = {
   production: true,
   apiUrl: url,
+  freyUrl: 'http://u.mjtop.net/',
   keyPrefix: 'tyr',
   cookieDomain: 'mjtop.net',
   guiFix: guiFix,

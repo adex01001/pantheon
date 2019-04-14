@@ -32,8 +32,6 @@ const defaultPlayer: LUser = {
   displayName: '--- ? ---',
   id: DEFAULT_ID,
   tenhouId: null,
-  ident: null,
-  alias: null
 };
 
 @Component({

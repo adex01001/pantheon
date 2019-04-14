@@ -2,11 +2,9 @@ import { IDBImpl } from './interface';
 
 // LocalStorage driver
 export class IDBStorageImpl implements IDBImpl {
-  private prefix: string;
   private meta: { [key: string]: any } = {};
 
-  constructor(keyPrefix: string) {
-    this.prefix = keyPrefix + '.';
+  constructor() {
     this.meta = this.get('__meta');
     if (this.meta === null) {
       this.meta = {};
@@ -16,7 +14,7 @@ export class IDBStorageImpl implements IDBImpl {
 
   public get(key: string): any|null {
     try {
-      let v = localStorage.getItem(this.prefix + key);
+      let v = localStorage.getItem(key);
       if (v === null) { // tslint:disable-line no-null-keyword
         throw new Error();
       }
@@ -30,7 +28,7 @@ export class IDBStorageImpl implements IDBImpl {
     try {
       let v = JSON.stringify(value);
       this.meta[key] = true;
-      localStorage.setItem(this.prefix + key, v);
+      localStorage.setItem(key, v);
       if (key !== '__meta') {
         this.updateMeta();
       }
@@ -43,7 +41,7 @@ export class IDBStorageImpl implements IDBImpl {
   public delete(keys: string[]): void {
     for (let key of keys) {
       delete this.meta[key];
-      localStorage.removeItem(this.prefix + key);
+      localStorage.removeItem(key);
     }
     this.updateMeta();
   }
@@ -51,7 +49,7 @@ export class IDBStorageImpl implements IDBImpl {
   public clear(): void {
     for (let k in this.meta) {
       if (this.meta.hasOwnProperty(k)) {
-        localStorage.removeItem(this.prefix + k);
+        localStorage.removeItem(k);
       }
     }
     this.meta = {};

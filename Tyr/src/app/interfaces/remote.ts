@@ -179,13 +179,15 @@ export type RTablesState = {
   }>;
 }[]
 
-// for getPlayer
+// for getPersonalInfo
 export interface RUserInfo {
   id: number;
-  alias: string;
-  ident: string;
-  display_name: string;
+  city: string;
+  email: string | null;
+  phone: string | null;
   tenhou_id: string;
+  groups : number[];
+  title: string;
 }
 
 // for current games info
