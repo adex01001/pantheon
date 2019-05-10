@@ -134,3 +134,7 @@ body {
 .local-id-selector {
     width: 100px;
 }
+
+.access-rule-value-selector .icon {
+  display: none; /* default */
+}
