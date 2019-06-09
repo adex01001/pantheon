@@ -11,7 +11,25 @@
   padding-bottom: 2px;
   margin-bottom: 4px;
   border-bottom: 1px solid #999;
-  text-align: right;
+  text-align: center;
   padding-right: 10px;
 }
+
+.greeting-container .buttons {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.greeting-container .buttons button {
+  background-color: #ccc;
+  font-size: 20px;
+  padding: 10px 5px;
+  border: outset 3px;
+  outline: none;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
 

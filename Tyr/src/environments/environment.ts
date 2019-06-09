@@ -27,6 +27,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://api.dev.mjtop.net/',
   freyUrl: 'http://u.dev.mjtop.net/',
+  rhedaUrl: 'http://gui.dev.mjtop.net/',
   guiFix: (src: string) => src,
   keyPrefix: 'tyr',
   cookieDomain: 'mjtop.net',

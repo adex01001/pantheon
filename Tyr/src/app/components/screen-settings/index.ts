@@ -56,6 +56,19 @@ export class SettingsScreen extends I18nComponent {
     }, (error: any) => console.error(error));
   }
 
+  getButtonName() {
+    const eventName = this.state.getGameConfig('eventName'); 
+    if (eventName) {
+      return this.i18n._t('Current event: %1', [eventName]);
+    } else {
+      return this.i18n._t('No event selected');
+    }
+  }
+
+  openEventSelector() {
+    this.state.showEventsSelector();
+  }
+
   logout() {
     if (window.confirm(this.i18n._t("Are you sure you want to logout? You will have to get a new pin code to login again"))) {
       this.metrika.track(MetrikaService.LOGOUT, { screen: 'screen-settings' });

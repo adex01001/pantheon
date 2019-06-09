@@ -29,7 +29,7 @@ import { LCurrentGame, LUser, LTimerState, LWinItem, LGameConfig } from '../../i
 import { RSessionOverview, RRoundPaymentsInfo } from '../../interfaces/remote';
 
 export type AppScreen = 'overview' | 'outcomeSelect' | 'playersSelect' | 'otherTable' | 'otherTablesList'
-  | 'yakuSelect' | 'confirmation' | 'newGame' | 'lastResults' | 'lastRound' | 'login' | 'paoSelect' | 'settings' | 'nagashiSelect' | 'greeting';
+  | 'yakuSelect' | 'confirmation' | 'newGame' | 'lastResults' | 'lastRound' | 'login' | 'paoSelect' | 'settings' | 'nagashiSelect' | 'greeting' | 'events';
 export type LoadingSet = {
   games: boolean,
   overview: boolean,
@@ -293,6 +293,15 @@ export class AppState {
     switch (this._currentScreen) {
       case 'overview':
         this._currentScreen = 'lastResults';
+        break;
+      default: ;
+    }
+  }
+
+  showEventsSelector() {
+    switch (this._currentScreen) {
+      case 'settings':
+        this._currentScreen = 'events';
         break;
       default: ;
     }

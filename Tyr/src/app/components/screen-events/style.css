@@ -1,0 +1,16 @@
+.greeting-container {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  color: #ccc;
+}
+
+.greeting-container .label {
+  flex: 1;
+  margin-top: 10px;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #999;
+  text-align: center;
+  padding-right: 10px;
+}

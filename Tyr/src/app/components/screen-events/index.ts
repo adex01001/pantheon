@@ -22,26 +22,25 @@ import { Component, Input } from '@angular/core';
 import { AppState } from '../../primitives/appstate';
 import { I18nComponent, I18nService } from '../auxiliary-i18n';
 import { MetrikaService } from '../../services/metrika';
-import { environment } from '../../../environments/environment';
+import { RiichiApiService } from '../../services/riichiApi';
 
 @Component({
-  selector: 'screen-greeting',
+  selector: 'screen-events',
   templateUrl: './template.html',
   styleUrls: ['./style.css']
 })
-export class GreetingScreen extends I18nComponent {
+export class EventsScreen extends I18nComponent {
   @Input() state: AppState;
+  private events: any[];
 
   constructor(
     public i18n: I18nService,
-    private metrika: MetrikaService    
+    private metrika: MetrikaService,
+    private api: RiichiApiService
   ) { super(i18n); }
 
   ngOnInit() {
-    this.metrika.track(MetrikaService.SCREEN_ENTER, { screen: 'screen-greeting' });
-  }
-  
-  login() {
-    window.location.href = `${environment.rhedaUrl}login/`;
+    this.metrika.track(MetrikaService.SCREEN_ENTER, { screen: 'screen-events' });
+    this.api.getMyEvents().then((eventsArray) => {this.events = eventsArray});
   }
 }

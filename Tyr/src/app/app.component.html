@@ -94,5 +94,9 @@
       *ngIf="state.currentScreen() === 'greeting'"
       [state]="state"
     ></screen-greeting>
+    <screen-events
+      *ngIf="state.currentScreen() === 'events'"
+      [state]="state"
+    ></screen-events>
   </div>
 </div>

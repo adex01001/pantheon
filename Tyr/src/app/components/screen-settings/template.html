@@ -7,6 +7,9 @@
   </div>
   <div class="label">{{_USER_ACTIONS}}</div>
   <div class="buttons">
+    <button (click)="openEventSelector()">{{getButtonName()}}</button>
+  </div>
+  <div class="buttons">
     <button (click)="logout()">{{_LOGOUT}}</button>
   </div>
 </div>

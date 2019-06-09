@@ -51,6 +51,7 @@ import { AppState } from '../primitives/appstate';
 import 'rxjs/add/operator/toPromise';
 import config from '../config';
 import { environment } from '../../environments/environment';
+import { promise } from 'selenium-webdriver';
 
 @Injectable()
 export class RiichiApiService {
@@ -124,6 +125,19 @@ export class RiichiApiService {
   getTablesState() {
     return this._jsonRpcRequest<RTablesState>('getTablesStateT', environment.apiUrl)
       .then<Table[]>(tablesStateFormatter);
+  }
+
+  getMyEvents() {
+    return Promise.resolve([
+      {
+        'id': 1,
+        'name': 'Spb 2019'
+      },
+      {
+        'id': 2,
+        'name': 'Msk 2020'
+      }
+    ]);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////

@@ -38,6 +38,7 @@ import { OtherTablesListScreen } from './components/screen-other-tables-list';
 import { OtherTableScreen } from './components/screen-other-table';
 import { SettingsScreen } from './components/screen-settings';
 import { GreetingScreen } from './components/screen-greeting';
+import { EventsScreen } from './components/screen-events';
 
 import { UserItemComponent } from './components/element-user-item';
 import { YakuItemButtonComponent } from './components/element-yaku-item-button';
@@ -72,6 +73,7 @@ import { IDB } from './services/idb';
     OtherTableScreen,
     SettingsScreen,
     GreetingScreen,
+    EventsScreen,
 
     UserItemComponent,
     YakuItemButtonComponent,

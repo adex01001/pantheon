@@ -30,6 +30,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  margin: 4px;
 }
 
 .settings-container .buttons button:active {
