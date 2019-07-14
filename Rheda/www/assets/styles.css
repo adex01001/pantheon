@@ -135,6 +135,11 @@ body {
     width: 100px;
 }
 
+.centered-content {
+  text-align: center;
+}
+
 .access-rule-value-selector .icon {
   display: none; /* default */
 }
+
