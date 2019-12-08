@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { createStore, combineReducers, Store as ReduxStore, Action } from 'redux';
-import { initialState } from './state';
-import { IAppState } from "./interfaces";
 import { AppActionTypes } from "./actions/interfaces";
 import { screenManageReducer } from "./reducers/screenManageReducer";
 
@@ -25,4 +23,3 @@ export class Store {
     this.store.dispatch(action);
   }
 }
-

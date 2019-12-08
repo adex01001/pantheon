@@ -150,6 +150,9 @@ export function screenManageReducer(
           break;
       }
 
+      if (nextScreen === state.currentScreen) {
+        return state;
+      }
       return {
         ...state,
         currentScreen: nextScreen
@@ -206,6 +209,9 @@ export function screenManageReducer(
         default:
       }
 
+      if (prevScreen === state.currentScreen) {
+        return state;
+      }
       return {
         ...state,
         currentScreen: prevScreen
