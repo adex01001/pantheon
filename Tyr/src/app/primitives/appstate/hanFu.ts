@@ -18,37 +18,7 @@
  * along with Tyr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Player } from '../../interfaces/common';
 import { AppOutcome } from '../../interfaces/app';
-
-
-export function setHan(han: number, outcome: AppOutcome, mrWinner: number) {
-  switch (outcome.selectedOutcome) {
-    case 'ron':
-    case 'tsumo':
-      outcome.han = han;
-      break;
-    case 'multiron':
-      outcome.wins[mrWinner].han = han;
-      break;
-    default:
-      throw new Error('No yaku may exist on this outcome');
-  }
-}
-
-export function setFu(fu: number, outcome: AppOutcome, mrWinner: number) {
-  switch (outcome.selectedOutcome) {
-    case 'ron':
-    case 'tsumo':
-      outcome.fu = fu;
-      break;
-    case 'multiron':
-      outcome.wins[mrWinner].fu = fu;
-      break;
-    default:
-      throw new Error('No yaku may exist on this outcome');
-  }
-}
 
 export function getHanOf(user: number, outcome: AppOutcome) {
   switch (outcome.selectedOutcome) {

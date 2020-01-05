@@ -1,11 +1,10 @@
 import { IAppState } from "../interfaces";
-import { AppOutcome, WinProps } from "../../../interfaces/app";
+import { AppOutcome, DrawOutcomeProps, LoseOutcomeProps, WinOutcomeProps, WinProps } from "../../../interfaces/app";
 import { YakuId } from "../../../primitives/yaku";
 import { addYakuToList, limits, pack, unpack } from "../../../primitives/yaku-compat";
 import { getFixedFu, getHan } from "../../../primitives/yaku-values";
-import { getRequiredYaku } from "../../../primitives/appstate/yaku";
 
-export function modifyWinOutcome(state: IAppState, fields: { [key: string]: any }, winnerIdGetter?: () => number) {
+export function modifyWinOutcome(state: IAppState, fields: WinOutcomeProps, winnerIdGetter?: () => number): IAppState {
   switch (state.currentOutcome.selectedOutcome) {
     case "ron":
     case "tsumo":
@@ -14,7 +13,7 @@ export function modifyWinOutcome(state: IAppState, fields: { [key: string]: any 
         currentOutcome: {
           ...state.currentOutcome,
           ...fields
-        }
+        } as AppOutcome // hacked, ts does not understand this :(
       };
     case "multiron":
       return {
@@ -31,9 +30,96 @@ export function modifyWinOutcome(state: IAppState, fields: { [key: string]: any 
         }
       };
     default:
-      throw new Error('No yaku may exist on this outcome');
+      throw new Error('Wrong outcome modifier used');
   }
 }
+
+export function modifyLoseOutcome(state: IAppState, fields: LoseOutcomeProps): IAppState {
+  switch (state.currentOutcome.selectedOutcome) {
+    case "ron":
+    case "multiron":
+    case "chombo":
+      return {
+        ...state,
+        currentOutcome: {
+          ...state.currentOutcome,
+          ...fields
+        } as AppOutcome // hacked, ts does not understand this :(
+      };
+    default:
+      throw new Error('Wrong outcome modifier used');
+  }
+}
+
+/**
+ * This is to modify multiwin outcome winners count and init their data. To modify winner data use modifyWinProps.
+ * @param state
+ * @param winnerId
+ * @param winnerIsDealer
+ * @param remove  do not replace, but remove the entry
+ */
+export function modifyMultiwin(state: IAppState, winnerId: number, winnerIsDealer: boolean, remove: boolean = false): IAppState {
+  if (state.currentOutcome.selectedOutcome !== 'multiron') {
+    throw new Error('Wrong outcome modifier used');
+  }
+
+  if (remove) {
+    const wins = { ...state.currentOutcome.wins };
+    delete wins[winnerId];
+
+    return {
+      ...state,
+      currentOutcome: {
+        ...state.currentOutcome,
+        multiRon: state.currentOutcome.wins[winnerId]
+          ? state.currentOutcome.multiRon - 1
+          : state.currentOutcome.multiRon,
+        wins
+      }
+    };
+  } else {
+    return {
+      ...state,
+      currentOutcome: {
+        ...state.currentOutcome,
+        multiRon: state.currentOutcome.wins[winnerId]
+          ? state.currentOutcome.multiRon
+          : state.currentOutcome.multiRon + 1,
+        wins: {
+          ...state.currentOutcome.wins,
+          [winnerId]: {
+            winner: winnerId,
+            winnerIsDealer,
+            han: 0,
+            fu: 0,
+            possibleFu: [],
+            yaku: '',
+            dora: 0,
+            openHand: false
+          }
+        }
+      }
+    };
+  }
+}
+
+export function modifyDrawOutcome(state: IAppState, fields: DrawOutcomeProps): IAppState {
+  switch (state.currentOutcome.selectedOutcome) {
+    case "abort":
+    case "draw":
+    case "nagashi":
+      return {
+        ...state,
+        currentOutcome: {
+          ...state.currentOutcome,
+          ...fields
+        } as AppOutcome // hacked, ts does not understand this :(
+      };
+    default:
+      throw new Error('Wrong outcome modifier used');
+  }
+}
+
 
 export function addYakuToProps(
   winProps: WinProps,

@@ -1,4 +1,3 @@
-import { getInlineResourcesTransformFactory } from "@angular/compiler-cli/src/transformers/inline_resources";
 import { YakuId } from "../../../primitives/yaku";
 
 export const RESET_STATE = 'RESET_STATE';
@@ -14,6 +13,12 @@ export const SET_DORA_COUNT = 'SET_DORA_COUNT';
 export const SET_FU_COUNT = 'SET_FU_COUNT';
 export const ADD_YAKU = 'ADD_YAKU';
 export const REMOVE_YAKU = 'REMOVE_YAKU';
+export const TOGGLE_RIICHI = 'TOGGLE_RIICHI';
+export const TOGGLE_WINNER = 'TOGGLE_WINNER';
+export const TOGGLE_LOSER = 'TOGGLE_LOSER';
+export const TOGGLE_PAO = 'TOGGLE_PAO';
+export const TOGGLE_DEADHAND = 'TOGGLE_DEADHAND';
+export const TOGGLE_NAGASHI = 'TOGGLE_NAGASHI';
 
 interface ResetStateAction {
   type: typeof RESET_STATE;
@@ -86,6 +91,39 @@ interface RemoveYakuAction {
   };
 }
 
+interface ToggleRiichiAction {
+  type: typeof TOGGLE_RIICHI;
+  payload: number;
+}
+
+interface ToggleWinnerAction {
+  type: typeof TOGGLE_WINNER;
+  payload: number;
+}
+
+interface ToggleLoserAction {
+  type: typeof TOGGLE_LOSER;
+  payload: number;
+}
+
+interface TogglePaoAction {
+  type: typeof TOGGLE_PAO;
+  payload: {
+    id: number,
+    yakuWithPao: YakuId[]
+  };
+}
+
+interface ToggleDeadhandAction {
+  type: typeof TOGGLE_DEADHAND;
+  payload: number;
+}
+
+interface ToggleNagashiAction {
+  type: typeof TOGGLE_NAGASHI;
+  payload: number;
+}
+
 export type AppActionTypes = ResetStateAction
   | StartNewGameAction
   | ShowLastResultsAction
@@ -99,4 +137,10 @@ export type AppActionTypes = ResetStateAction
   | SetFuCountAction
   | AddYakuAction
   | RemoveYakuAction
+  | ToggleRiichiAction
+  | ToggleWinnerAction
+  | ToggleLoserAction
+  | TogglePaoAction
+  | ToggleDeadhandAction
+  | ToggleNagashiAction
   ;

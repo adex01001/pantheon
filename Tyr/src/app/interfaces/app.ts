@@ -96,4 +96,6 @@ export type AppOutcome
   | AppOutcomeNagashi
   ;
 
-
+export type WinOutcomeProps = Partial<AppOutcomeMultiRon | AppOutcomeRon | AppOutcomeTsumo>;
+export type LoseOutcomeProps = Partial<AppOutcomeMultiRon | AppOutcomeRon | AppOutcomeChombo>;
+export type DrawOutcomeProps = Partial<AppOutcomeAbort | AppOutcomeDraw | AppOutcomeNagashi>;
