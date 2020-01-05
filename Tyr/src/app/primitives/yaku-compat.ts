@@ -205,6 +205,8 @@ const combinableYaku = [
   [Y.SANSHOKUDOUKOU, Y.YAKUHAI1],
   [Y.SANSHOKUDOUKOU, Y.YAKUHAI2],
   [Y.SANSHOKUDOUKOU, Y.TANYAO],
+  [Y.SANSHOKUDOUKOU, Y.CHANTA],
+  [Y.SANSHOKUDOUKOU, Y.JUNCHAN],
   [Y.SANSHOKUDOUKOU, Y.RIICHI],
   [Y.SANSHOKUDOUKOU, Y.DOUBLERIICHI],
   [Y.SANSHOKUDOUKOU, Y.IPPATSU],
@@ -570,4 +572,17 @@ export function getAllowedYaku(enabledYaku: Y[]): Y[] {
   return yakuGraph.getAllowedNodes(
     enabledYaku.map((id) => nodes[id])
   ).map((node) => node.data.id);
+}
+
+export function pack(list: Y[]): string {
+  return yakuList.reduce((acc: string, el) => {
+    return acc + (list.indexOf(el.id) === -1 ? '.' : '+');
+  }, '');
+}
+
+export function unpack(list: string): Y[] {
+  let index = 0;
+  return yakuList.reduce((acc: Y[], el) => {
+    return list[index++] === '+' ? acc.concat(el.id) : acc;
+  }, <Y[]>[]);
 }

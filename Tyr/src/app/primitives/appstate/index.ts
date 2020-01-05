@@ -410,8 +410,6 @@ export class AppState {
   getRequiredYaku = () => getRequiredYaku(this._currentOutcome, this._multironCurrentWinner);
   getSelectedYaku = () => getSelectedYaku(this._currentOutcome, this._multironCurrentWinner);
   yakumanInYaku = () => yakumanInYaku(this._currentOutcome, this._multironCurrentWinner);
-  addYaku = (id: YakuId, bypassChecks: boolean = false): void => addYaku(this._currentOutcome, id, this._multironCurrentWinner, this.i18n, bypassChecks);
-  removeYaku = (id: YakuId): void => removeYaku(this._currentOutcome, id, this._multironCurrentWinner, this.i18n);
   getAllowedYaku = (): YakuId[] => getAllowedYaku(this._currentOutcome, this._multironCurrentWinner);
   getTimeRemaining = () => getTimeRemaining();
   getCurrentTimerZone = () => getCurrentTimerZone(this, this._yellowZoneAlreadyPlayed);
