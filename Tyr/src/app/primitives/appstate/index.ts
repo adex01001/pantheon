@@ -155,31 +155,6 @@ export class AppState {
 
   loginWithPin(pin: string) {
     this._loading.login = true;
-    let retriesCount = 0;
-    return new Promise<string>((resolve, reject) => {
-      const runWithRetry = () => {
-        this.api.confirmRegistration(pin)
-          .then((authToken: string) => {
-            retriesCount = 0;
-            this._loading.login = false;
-            this.storage.set('authToken', authToken);
-            resolve(authToken);
-          })
-          .catch((e) => {
-            retriesCount++;
-            if (retriesCount < 5) {
-              setTimeout(runWithRetry, 500);
-              return;
-            }
-
-            retriesCount = 0;
-            this._loading.login = false;
-            reject(e);
-          });
-      };
-
-      runWithRetry();
-    });
   }
 
   reinit() {

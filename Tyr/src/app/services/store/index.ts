@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { createStore, combineReducers, Store as ReduxStore, Action } from 'redux';
+import { createStore, combineReducers, applyMiddleware, Store as ReduxStore, Action } from 'redux';
 import { AppActionTypes } from "./actions/interfaces";
 import { screenManageReducer } from "./reducers/screenManageReducer";
+import { mimirClient } from './middlewares/mimirClient';
 
 @Injectable()
 export class Store {
@@ -11,7 +12,9 @@ export class Store {
   constructor() {
     this.store = createStore(combineReducers({
       screenManageReducer
-    }));
+    }), applyMiddleware(
+      mimirClient
+    ));
   }
 
   public subscribe(onUpdate: (state) => void) {
