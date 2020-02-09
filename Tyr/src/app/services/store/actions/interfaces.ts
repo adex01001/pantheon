@@ -23,15 +23,14 @@ export const TOGGLE_NAGASHI = 'TOGGLE_NAGASHI';
 export const CONFIRM_REGISTRATION_INIT = 'CONFIRM_REGISTRATION_INIT';
 export const CONFIRM_REGISTRATION_SUCCESS = 'CONFIRM_REGISTRATION_SUCCESS';
 export const CONFIRM_REGISTRATION_FAIL = 'CONFIRM_REGISTRATION_FAIL';
-export const SET_CREDENTIALS_INIT = 'SET_CREDENTIALS_INIT';
-export const SET_CREDENTIALS_SUCCESS = 'SET_CREDENTIALS_SUCCESS';
-export const SET_CREDENTIALS_FAIL = 'SET_CREDENTIALS_FAIL';
+export const SET_CREDENTIALS = 'SET_CREDENTIALS_INIT';
 export const UPDATE_CURRENT_GAMES_INIT = 'GET_CURRENT_GAMES_INIT';
 export const UPDATE_CURRENT_GAMES_SUCCESS = 'GET_CURRENT_GAMES_SUCCESS';
 export const UPDATE_CURRENT_GAMES_FAIL = 'GET_CURRENT_GAMES_FAIL';
 export const GET_GAME_OVERVIEW_INIT = 'GET_GAME_OVERVIEW_INIT';
 export const GET_GAME_OVERVIEW_SUCCESS = 'GET_GAME_OVERVIEW_SUCCESS';
 export const GET_GAME_OVERVIEW_FAIL = 'GET_GAME_OVERVIEW_FAIL';
+export const FORCE_LOGOUT = 'FORCE_LOGOUT';
 
 interface ResetStateAction {
   type: typeof RESET_STATE;
@@ -149,16 +148,9 @@ interface ConfirmRegistrationActionSuccess {
 interface ConfirmRegistrationActionFail {
   type: typeof CONFIRM_REGISTRATION_FAIL;
 }
-interface SetCredentialsActionInit {
-  type: typeof SET_CREDENTIALS_INIT;
-  async: true;
+interface SetCredentialsAction {
+  type: typeof SET_CREDENTIALS;
   payload: string;
-}
-interface SetCredentialsActionSuccess {
-  type: typeof SET_CREDENTIALS_SUCCESS;
-}
-interface SetCredentialsActionFail {
-  type: typeof SET_CREDENTIALS_FAIL;
 }
 interface UpdateCurrentGamesActionInit {
   type: typeof UPDATE_CURRENT_GAMES_INIT;
@@ -173,12 +165,16 @@ interface UpdateCurrentGamesActionFail {
 interface GetGameOverviewActionInit {
   type: typeof GET_GAME_OVERVIEW_INIT;
   async: true;
+  payload: string;
 }
 interface GetGameOverviewActionSuccess {
   type: typeof GET_GAME_OVERVIEW_SUCCESS;
 }
 interface GetGameOverviewActionFail {
   type: typeof GET_GAME_OVERVIEW_FAIL;
+}
+interface ForceLogoutAction {
+  type: typeof FORCE_LOGOUT;
 }
 
 export type AppActionTypes =
@@ -202,21 +198,22 @@ export type AppActionTypes =
   | ToggleDeadhandAction
   | ToggleNagashiAction
   | ConfirmRegistrationActionSuccess
-  | SetCredentialsActionSuccess
   | UpdateCurrentGamesActionSuccess
   | GetGameOverviewActionSuccess
   | ConfirmRegistrationActionFail
-  | SetCredentialsActionFail
   | UpdateCurrentGamesActionFail
   | GetGameOverviewActionFail
+  | SetCredentialsAction
+  | ForceLogoutAction
   ;
 
 export type AppAsyncActions =
   | ConfirmRegistrationActionInit
-  | SetCredentialsActionInit
   | UpdateCurrentGamesActionInit
   | GetGameOverviewActionInit
   ;
+
+export type AppActionsAll = AppActionTypes | AppAsyncActions;
 
 export function isAsyncAction(action: AnyAction): action is AppAsyncActions {
   return action.async === true;
