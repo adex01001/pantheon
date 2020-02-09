@@ -34,17 +34,9 @@ export const mimirClient = (api: RiichiApiService) => (store: ReduxStore) => (ne
     default:
       return next(action);
   }
-
-  console.group(action.type);
-  console.info('dispatching', action);
-  let result = next(action);
-  console.log('next state', store.getState());
-  console.groupEnd();
-  return result
 };
 
 function loginWithRetry(pin: string, api: RiichiApiService, dispatch: Dispatch) {
-  // TODO: set loading = true;
   dispatch({ type: CONFIRM_REGISTRATION_INIT });
 
   let retriesCount = 0;
@@ -52,8 +44,6 @@ function loginWithRetry(pin: string, api: RiichiApiService, dispatch: Dispatch) 
     api.confirmRegistration(pin)
       .then((authToken: string) => {
         retriesCount = 0;
-        // TODO: set loading = false;
-        // TODO: set token to storage in next mw
         dispatch({ type: CONFIRM_REGISTRATION_SUCCESS, payload: authToken });
       })
       .catch((e) => {
@@ -72,7 +62,6 @@ function loginWithRetry(pin: string, api: RiichiApiService, dispatch: Dispatch) 
 }
 
 function updateCurrentGames(api: RiichiApiService, dispatchNext: Dispatch, dispatchToStore: Dispatch) {
-  // TODO: set loading = true;
   dispatchNext({ type: UPDATE_CURRENT_GAMES_INIT });
 
   // TODO: make single method? should become faster!
@@ -83,18 +72,14 @@ function updateCurrentGames(api: RiichiApiService, dispatchNext: Dispatch, dispa
     api.getTimerState()
   ];
 
-  return Promise.all(promises).then(([games, playerInfo, gameConfig, timerState]) => {
-    // this.metrika.track(MetrikaService.CONFIG_RECEIVED);
-    // this.metrika.setUserId(playerInfo.id);
+  Promise.all(promises).then(([games, playerInfo, gameConfig, timerState]) => {
     dispatchNext({ type: UPDATE_CURRENT_GAMES_SUCCESS, payload: { games, playerInfo, gameConfig, timerState }});
-    // TODO: set loading = false
     if (games.length > 0) {
       dispatchToStore({ type: GET_GAME_OVERVIEW_INIT, payload: games[0].hashcode } );
     }
   }).catch((e) => {
-    // TODO: set loading = false
     if (e.code === 401) { // token has rotten
-      dispatchNext({ type: FORCE_LOGOUT });
+      dispatchToStore({ type: FORCE_LOGOUT });
     } else {
       dispatchNext({ type: UPDATE_CURRENT_GAMES_FAIL, payload: e });
     }
@@ -102,16 +87,8 @@ function updateCurrentGames(api: RiichiApiService, dispatchNext: Dispatch, dispa
 }
 
 function getGameOverview(currentSessionHash: string, api: RiichiApiService, dispatch: Dispatch) {
-  // this.metrika.track(MetrikaService.LOAD_STARTED, { type: 'game-overview' });
+  dispatch({ type: GET_GAME_OVERVIEW_INIT });
   api.getGameOverview(currentSessionHash)
-    .then((overview) => {
-      // this.metrika.track(MetrikaService.LOAD_SUCCESS, { type: 'game-overview', finished: overview.state.finished });
-      dispatch({ type: GET_GAME_OVERVIEW_SUCCESS, payload: overview });
-      // TODO: set loading = false
-    })
-    .catch((error: RemoteError) => {
-      // TODO: set loading = false
-      // this.metrika.track(MetrikaService.LOAD_ERROR, { type: 'game-overview', code: error.code, message: error.message });
-      dispatch({ type: GET_GAME_OVERVIEW_FAIL, payload: error });
-    });
+    .then((overview) => dispatch({ type: GET_GAME_OVERVIEW_SUCCESS, payload: overview }))
+    .catch((error: RemoteError) => dispatch({ type: GET_GAME_OVERVIEW_FAIL, payload: error }));
 }

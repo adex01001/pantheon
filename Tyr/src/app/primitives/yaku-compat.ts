@@ -20,8 +20,7 @@
 
 import { YakuId as Y, yakuList } from './yaku';
 import { Yaku } from '../interfaces/common';
-import { filter, clone } from 'lodash';
-import { Node, Graph, EdgeType } from './graph';
+import { Graph, EdgeType } from './graph';
 
 // TODO: придумать что-нибудь, чтобы вся эта ерунда не занимала столько места в бандле.
 // В константы перевести может?
@@ -522,17 +521,15 @@ const combinableYakumans = [
   [Y.CHUURENPOUTO, Y.CHIHOU]
 ];
 
-let yakuGraph = new Graph<Yaku>();
 let nodes = {};
+for (let yaku of yakuList) {
+  nodes[yaku.id] = { id: yaku.id, data: yaku };
+}
 
-export function initYakuGraph(multiYakumans: boolean = false) {
-  yakuGraph = new Graph<Yaku>();
-  nodes = {};
-
+export function makeYakuGraph(multiYakumans: boolean = false) {
+  let yakuGraph = new Graph<Yaku>();
   for (let yaku of yakuList) {
-    let node = { id: yaku.id, data: yaku };
-    nodes[yaku.id] = node;
-    yakuGraph.addNode(node);
+    yakuGraph.addNode(nodes[yaku.id]);
   }
 
   for (let comb of combinableYaku) {
@@ -549,6 +546,8 @@ export function initYakuGraph(multiYakumans: boolean = false) {
     yakuGraph.addEdge(nodes[supr[0]], nodes[supr[1]], EdgeType.Suppresses);
     yakuGraph.addEdge(nodes[supr[1]], nodes[supr[0]], EdgeType.IsSuppressed);
   }
+
+  return yakuGraph;
 }
 
 
@@ -561,14 +560,14 @@ export function initYakuGraph(multiYakumans: boolean = false) {
   - Причина отсечения конкретного яку - отсутствие прямого ребра с уже выбарнными яку. Можно выводить где-то.
 */
 
-export function addYakuToList(yaku: Y, enabledYaku: Y[]): Y[] {
+export function addYakuToList(yakuGraph: Graph<Yaku>, yaku: Y, enabledYaku: Y[]): Y[] {
   return yakuGraph.tryAddAllowedNode(
     enabledYaku.map((id) => nodes[id]),
     nodes[yaku]
   ).map((node) => node.data.id);
 }
 
-export function getAllowedYaku(enabledYaku: Y[]): Y[] {
+export function getAllowedYaku(yakuGraph: Graph<Yaku>, enabledYaku: Y[]): Y[] {
   return yakuGraph.getAllowedNodes(
     enabledYaku.map((id) => nodes[id])
   ).map((node) => node.data.id);

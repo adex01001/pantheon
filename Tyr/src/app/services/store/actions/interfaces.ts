@@ -1,5 +1,7 @@
 import { YakuId } from "../../../primitives/yaku";
 import { AnyAction } from "redux";
+import {RemoteError} from "../../remoteError";
+import {LCurrentGame, LGameConfig, LTimerState, LUser} from "../../../interfaces/local";
 
 export const RESET_STATE = 'RESET_STATE';
 export const START_NEW_GAME = 'START_NEW_GAME';
@@ -147,6 +149,7 @@ interface ConfirmRegistrationActionSuccess {
 }
 interface ConfirmRegistrationActionFail {
   type: typeof CONFIRM_REGISTRATION_FAIL;
+  payload: RemoteError;
 }
 interface SetCredentialsAction {
   type: typeof SET_CREDENTIALS;
@@ -158,9 +161,16 @@ interface UpdateCurrentGamesActionInit {
 }
 interface UpdateCurrentGamesActionSuccess {
   type: typeof UPDATE_CURRENT_GAMES_SUCCESS;
+  payload: {
+    games: LCurrentGame[];
+    playerInfo: LUser;
+    gameConfig: LGameConfig;
+    timerState: LTimerState;
+  }
 }
 interface UpdateCurrentGamesActionFail {
   type: typeof UPDATE_CURRENT_GAMES_FAIL;
+  payload: RemoteError;
 }
 interface GetGameOverviewActionInit {
   type: typeof GET_GAME_OVERVIEW_INIT;
@@ -172,6 +182,7 @@ interface GetGameOverviewActionSuccess {
 }
 interface GetGameOverviewActionFail {
   type: typeof GET_GAME_OVERVIEW_FAIL;
+  payload: RemoteError;
 }
 interface ForceLogoutAction {
   type: typeof FORCE_LOGOUT;

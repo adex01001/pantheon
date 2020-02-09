@@ -5,6 +5,11 @@ import { AppActionTypes } from "./actions/interfaces";
 import { screenManageReducer } from "./reducers/screenManageReducer";
 import { mimirClient } from './middlewares/mimirClient';
 import { RiichiApiService } from "../riichiApi";
+import { mimirReducer } from "./reducers/mimirReducer";
+import { outcomeReducer } from "./reducers/outcomeReducer";
+import {metrika} from "./middlewares/metrika";
+import {history} from "./middlewares/history";
+import {MetrikaService} from "../metrika";
 
 @Injectable()
 export class Store {
@@ -13,9 +18,13 @@ export class Store {
 
   constructor(client: HttpClient) {
     this.store = createStore(combineReducers({
-      screenManageReducer
+      screenManageReducer,
+      outcomeReducer,
+      mimirReducer
     }), applyMiddleware(
-      mimirClient(new RiichiApiService(client))
+      mimirClient(new RiichiApiService(client)),
+      metrika(new MetrikaService(client)),
+      history()
     ));
   }
 
