@@ -48,4 +48,6 @@ export interface IAppState {
   loading: LoadingSet;
   timer: TimerData;
   yakuList: Graph<Yaku>;
+
+  isUniversalWatcher: boolean;
 }

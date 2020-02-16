@@ -23,17 +23,3 @@ import { AppOutcome } from '../../interfaces/app';
 import { YakuId } from '../yaku';
 
 export type PMap = { [key: number]: Player };
-
-export function getRiichiUsers(outcome: AppOutcome, playerIdMap: PMap): Player[] {
-  switch (outcome.selectedOutcome) {
-    case 'ron':
-    case 'tsumo':
-    case 'draw':
-    case 'nagashi':
-    case 'abort':
-    case 'multiron':
-      return outcome.riichiBets.map((r) => playerIdMap[r]);
-    default:
-      return [];
-  }
-}

@@ -18,29 +18,13 @@
  * along with Tyr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AppOutcome } from '../../interfaces/app';
-import { YakuId } from '../yaku';
-import { WinProps } from '../../interfaces/app';
-import { getAllowedYaku as getAllowedYakuCompat, initYakuGraph, limits, unpack } from '../yaku-compat';
-import { LGameConfig } from '../../interfaces/local';
-import { intersection } from 'lodash';
+import { getAllowedYaku as getAllowedYakuCompat, limits, unpack } from '../../../primitives/yaku-compat';
+import {IAppState} from "../interfaces";
+import {YakuId} from "../../../primitives/yaku";
+import {WinProps} from "../../../interfaces/app";
 
-export const initYaku = initYakuGraph;
-
-// TODO: this should be done in UI
-/*export function hasYaku(outcome: AppOutcome, id: YakuId, mrWinner: number) {
-  switch (outcome.selectedOutcome) {
-    case 'ron':
-    case 'tsumo':
-      return -1 !== outcome.yaku.indexOf(id);
-    case 'multiron':
-      return -1 !== outcome.wins[mrWinner].yaku.indexOf(id);
-    default:
-      return false;
-  }
-}*/
-
-export function getRequiredYaku(outcome: AppOutcome, mrWinner: number): YakuId[] {
+export function getRequiredYaku(state: IAppState): YakuId[] {
+  const outcome = state.currentOutcome;
   switch (outcome.selectedOutcome) {
     case 'ron':
       if (outcome.riichiBets.indexOf(outcome.winner) !== -1) {
@@ -56,7 +40,7 @@ export function getRequiredYaku(outcome: AppOutcome, mrWinner: number): YakuId[]
       }
       break;
     case 'multiron':
-      if (outcome.riichiBets.indexOf(mrWinner) !== -1) {
+      if (outcome.riichiBets.indexOf(state.multironCurrentWinner) !== -1) {
         return [YakuId.RIICHI];
       }
       break;
@@ -67,20 +51,22 @@ export function getRequiredYaku(outcome: AppOutcome, mrWinner: number): YakuId[]
   return [];
 }
 
-export function getSelectedYaku(outcome: AppOutcome, mrWinner: number): YakuId[] {
+export function getSelectedYaku(state: IAppState): YakuId[] {
+  const outcome = state.currentOutcome;
   switch (outcome.selectedOutcome) {
     case 'ron':
     case 'tsumo':
       return [].concat(outcome.yaku);
     case 'multiron':
-      return [].concat(outcome.wins[mrWinner].yaku);
+      return [].concat(outcome.wins[state.multironCurrentWinner].yaku);
     default:
       return [];
   }
 }
 
-export function getAllowedYaku(outcome: AppOutcome, mrWinner: number): YakuId[] {
+export function getAllowedYaku(state: IAppState): YakuId[] {
   let yakuList;
+  const outcome = state.currentOutcome;
   switch (outcome.selectedOutcome) {
     case 'ron':
       yakuList = unpack(outcome.yaku);
@@ -110,10 +96,10 @@ export function getAllowedYaku(outcome: AppOutcome, mrWinner: number): YakuId[] 
         ]
       );
     case 'multiron':
-      yakuList = unpack(outcome.wins[mrWinner].yaku);
+      yakuList = unpack(outcome.wins[state.multironCurrentWinner].yaku);
       return _excludeYaku(
         outcome,
-        mrWinner,
+        state.multironCurrentWinner,
         yakuList,
         getAllowedYakuCompat(yakuList),
         [
@@ -128,7 +114,8 @@ export function getAllowedYaku(outcome: AppOutcome, mrWinner: number): YakuId[] 
   }
 }
 
-function _excludeYaku(outcome: AppOutcome, winner: number, rawYakuList: YakuId[], list: YakuId[], toBeExcluded: YakuId[]) {
+function _excludeYaku(state: IAppState, winner: number, rawYakuList: YakuId[], list: YakuId[], toBeExcluded: YakuId[]) {
+  const outcome = state.currentOutcome;
   return list.filter((yaku: YakuId) => {
     if ( // disable ippatsu if riichi or double riichi is not selected
       yaku === YakuId.IPPATSU
@@ -194,7 +181,8 @@ function _excludeYaku(outcome: AppOutcome, winner: number, rawYakuList: YakuId[]
   });
 }
 
-export function yakumanInYaku(outcome: AppOutcome, mrWinner: number): boolean {
+export function yakumanInYaku(state: IAppState): boolean {
+  const outcome = state.currentOutcome;
   if (!outcome) {
     return false;
   }
@@ -202,16 +190,16 @@ export function yakumanInYaku(outcome: AppOutcome, mrWinner: number): boolean {
   switch (outcome.selectedOutcome) {
     case 'ron':
     case 'tsumo':
-      return _hasYakumanInYakuList(outcome, outcome);
+      return _hasYakumanInYakuList(outcome);
     case 'multiron':
-      let props = outcome.wins[mrWinner];
-      return _hasYakumanInYakuList(outcome, props);
+      let props = outcome.wins[state.multironCurrentWinner];
+      return _hasYakumanInYakuList(props);
     default:
       throw new Error('No yaku may exist on this outcome');
   }
 }
 
-function _hasYakumanInYakuList(outcome: AppOutcome, props: WinProps): boolean {
+function _hasYakumanInYakuList(props: WinProps): boolean {
   const yakuList = unpack(props.yaku);
   for (let y of yakuList) {
     if (limits.indexOf(y) !== -1) {
@@ -220,22 +208,4 @@ function _hasYakumanInYakuList(outcome: AppOutcome, props: WinProps): boolean {
   }
 
   return false;
-}
-
-export function winnerHasYakuWithPao(outcome: AppOutcome, gameConfig: LGameConfig) {
-  if (!outcome) {
-    return false;
-  }
-
-  switch (outcome.selectedOutcome) {
-    case 'ron':
-    case 'tsumo':
-      return intersection(unpack(outcome.yaku), gameConfig.yakuWithPao).length > 0;
-    case 'multiron':
-      return Object.keys(outcome.wins).reduce<boolean>((acc, playerId) => {
-        return acc || (intersection(unpack(outcome.wins[playerId].yaku), gameConfig.yakuWithPao).length > 0);
-      }, false);
-    default:
-      throw new Error('No pao exist on this outcome');
-  }
 }
