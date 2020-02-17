@@ -19,7 +19,6 @@
  */
 
 import {IAppState} from "../interfaces";
-import {AppOutcome} from "../../../interfaces/app";
 
 export function getHan(state: IAppState, user?: number) {
   const outcome = state.currentOutcome;

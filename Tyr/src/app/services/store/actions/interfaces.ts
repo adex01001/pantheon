@@ -1,7 +1,9 @@
 import { YakuId } from "../../../primitives/yaku";
 import { AnyAction } from "redux";
-import {RemoteError} from "../../remoteError";
-import {LCurrentGame, LGameConfig, LTimerState, LUser} from "../../../interfaces/local";
+import { RemoteError } from "../../remoteError";
+import { LCurrentGame, LGameConfig, LTimerState, LUser } from "../../../interfaces/local";
+import {RRoundPaymentsInfoMulti, RRoundPaymentsInfoSingle, RSessionOverview} from "../../../interfaces/remote";
+import {Table} from "../../../interfaces/common";
 
 export const RESET_STATE = 'RESET_STATE';
 export const START_NEW_GAME = 'START_NEW_GAME';
@@ -33,6 +35,15 @@ export const GET_GAME_OVERVIEW_INIT = 'GET_GAME_OVERVIEW_INIT';
 export const GET_GAME_OVERVIEW_SUCCESS = 'GET_GAME_OVERVIEW_SUCCESS';
 export const GET_GAME_OVERVIEW_FAIL = 'GET_GAME_OVERVIEW_FAIL';
 export const FORCE_LOGOUT = 'FORCE_LOGOUT';
+export const GET_OTHER_TABLES_LIST_INIT = 'GET_OTHER_TABLES_LIST_INIT';
+export const GET_OTHER_TABLES_LIST_SUCCESS = 'GET_OTHER_TABLES_LIST_SUCCESS';
+export const GET_OTHER_TABLES_LIST_FAIL = 'GET_OTHER_TABLES_LIST_FAIL';
+export const GET_OTHER_TABLE_INIT = 'GET_OTHER_TABLE_INIT';
+export const GET_OTHER_TABLE_SUCCESS = 'GET_OTHER_TABLE_SUCCESS';
+export const GET_OTHER_TABLE_FAIL = 'GET_OTHER_TABLE_FAIL';
+export const GET_LAST_ROUND_INIT = 'GET_LAST_ROUND_INIT';
+export const GET_LAST_ROUND_SUCCESS = 'GET_LAST_ROUND_SUCCESS';
+export const GET_LAST_ROUND_FAIL = 'GET_LAST_ROUND_FAIL';
 
 interface ResetStateAction {
   type: typeof RESET_STATE;
@@ -179,6 +190,7 @@ interface GetGameOverviewActionInit {
 }
 interface GetGameOverviewActionSuccess {
   type: typeof GET_GAME_OVERVIEW_SUCCESS;
+  payload: RSessionOverview;
 }
 interface GetGameOverviewActionFail {
   type: typeof GET_GAME_OVERVIEW_FAIL;
@@ -186,6 +198,44 @@ interface GetGameOverviewActionFail {
 }
 interface ForceLogoutAction {
   type: typeof FORCE_LOGOUT;
+}
+interface GetOtherTablesListAction {
+  type: typeof GET_OTHER_TABLES_LIST_INIT;
+  async: true;
+}
+interface GetOtherTablesListActionSuccess {
+  type: typeof GET_OTHER_TABLES_LIST_SUCCESS;
+  payload: Table[];
+}
+interface GetOtherTablesListActionFail {
+  type: typeof GET_OTHER_TABLES_LIST_FAIL;
+  payload: RemoteError;
+}
+interface GetOtherTableAction {
+  type: typeof GET_OTHER_TABLE_INIT;
+  async: true;
+  payload: string;
+}
+interface GetOtherTableActionSuccess {
+  type: typeof GET_OTHER_TABLE_SUCCESS;
+  payload: RSessionOverview;
+}
+interface GetOtherTableActionFail {
+  type: typeof GET_OTHER_TABLE_FAIL;
+  payload: RemoteError;
+}
+interface GetLastRoundAction {
+  type: typeof GET_LAST_ROUND_INIT;
+  async: true;
+  payload: string;
+}
+interface GetLastRoundActionSuccess {
+  type: typeof GET_LAST_ROUND_SUCCESS;
+  payload: RRoundPaymentsInfoSingle | RRoundPaymentsInfoMulti;
+}
+interface GetLastRoundActionFail {
+  type: typeof GET_LAST_ROUND_FAIL;
+  payload: RemoteError;
 }
 
 export type AppActionTypes =
@@ -216,12 +266,21 @@ export type AppActionTypes =
   | GetGameOverviewActionFail
   | SetCredentialsAction
   | ForceLogoutAction
+  | GetOtherTableActionSuccess
+  | GetOtherTableActionFail
+  | GetOtherTablesListActionSuccess
+  | GetOtherTablesListActionFail
+  | GetLastRoundActionSuccess
+  | GetLastRoundActionFail
   ;
 
 export type AppAsyncActions =
   | ConfirmRegistrationActionInit
   | UpdateCurrentGamesActionInit
   | GetGameOverviewActionInit
+  | GetOtherTableAction
+  | GetOtherTablesListAction
+  | GetLastRoundAction
   ;
 
 export type AppActionsAll = AppActionTypes | AppAsyncActions;

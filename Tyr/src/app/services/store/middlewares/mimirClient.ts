@@ -1,16 +1,20 @@
 import { Dispatch, Store as ReduxStore } from 'redux';
 import {
+  AppActionsAll,
   CONFIRM_REGISTRATION_FAIL,
   CONFIRM_REGISTRATION_INIT,
   CONFIRM_REGISTRATION_SUCCESS,
-  UPDATE_CURRENT_GAMES_INIT,
-  SET_CREDENTIALS,
-  AppActionsAll,
-  UPDATE_CURRENT_GAMES_SUCCESS,
-  UPDATE_CURRENT_GAMES_FAIL,
-  GET_GAME_OVERVIEW_INIT,
   FORCE_LOGOUT,
-  GET_GAME_OVERVIEW_SUCCESS, GET_GAME_OVERVIEW_FAIL
+  GET_GAME_OVERVIEW_FAIL,
+  GET_GAME_OVERVIEW_INIT,
+  GET_GAME_OVERVIEW_SUCCESS, GET_LAST_ROUND_FAIL,
+  GET_LAST_ROUND_INIT, GET_LAST_ROUND_SUCCESS, GET_OTHER_TABLE_FAIL,
+  GET_OTHER_TABLE_INIT, GET_OTHER_TABLE_SUCCESS, GET_OTHER_TABLES_LIST_FAIL,
+  GET_OTHER_TABLES_LIST_INIT, GET_OTHER_TABLES_LIST_SUCCESS,
+  SET_CREDENTIALS,
+  UPDATE_CURRENT_GAMES_FAIL,
+  UPDATE_CURRENT_GAMES_INIT,
+  UPDATE_CURRENT_GAMES_SUCCESS
 } from "../actions/interfaces";
 import { RiichiApiService } from "../../riichiApi";
 import { LCurrentGame, LGameConfig, LTimerState, LUser } from "../../../interfaces/local";
@@ -30,6 +34,15 @@ export const mimirClient = (api: RiichiApiService) => (store: ReduxStore) => (ne
     case GET_GAME_OVERVIEW_INIT:
       // TODO: check session hash in store; bailout if none
       getGameOverview(action.payload, api, next);
+      break;
+    case GET_OTHER_TABLES_LIST_INIT:
+      getOtherTablesList(api, next);
+      break;
+    case GET_OTHER_TABLE_INIT:
+      getOtherTable(action.payload, api, next);
+      break;
+    case GET_LAST_ROUND_INIT:
+      getLastRound(action.payload, api, next);
       break;
     default:
       return next(action);
@@ -91,4 +104,25 @@ function getGameOverview(currentSessionHash: string, api: RiichiApiService, disp
   api.getGameOverview(currentSessionHash)
     .then((overview) => dispatch({ type: GET_GAME_OVERVIEW_SUCCESS, payload: overview }))
     .catch((error: RemoteError) => dispatch({ type: GET_GAME_OVERVIEW_FAIL, payload: error }));
+}
+
+function getOtherTable(sessionHash: string, api: RiichiApiService, dispatch: Dispatch) {
+  dispatch({ type: GET_OTHER_TABLE_INIT });
+  api.getGameOverview(sessionHash)
+    .then((table) => dispatch({ type: GET_OTHER_TABLE_SUCCESS, payload: table }))
+    .catch((e) => dispatch({ type: GET_OTHER_TABLE_FAIL, payload: e }));
+}
+
+function getOtherTablesList(api: RiichiApiService, dispatch: Dispatch) {
+  dispatch({ type: GET_OTHER_TABLES_LIST_INIT });
+  api.getTablesState()
+    .then((tables) => dispatch({ type: GET_OTHER_TABLES_LIST_SUCCESS, payload: tables }))
+    .catch((e) => dispatch({ type: GET_OTHER_TABLES_LIST_FAIL, payload: e }));
+}
+
+function getLastRound(sessionHash: string, api: RiichiApiService, dispatch: Dispatch) {
+  dispatch({ type: GET_LAST_ROUND_INIT });
+  api.getLastRound(sessionHash)
+    .then((paymentsInfo) => dispatch({ type: GET_LAST_ROUND_SUCCESS, payload: paymentsInfo }))
+    .catch((e) => dispatch({ type: GET_LAST_ROUND_FAIL, payload: e }));
 }

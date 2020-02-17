@@ -2,7 +2,6 @@ import {IAppState} from "../interfaces";
 import {LGameConfig, LWinItem} from "../../../interfaces/local";
 import {Player} from "../../../interfaces/common";
 import {YakuId} from "../../../primitives/yaku";
-import {timerIsWaiting} from "../../../primitives/appstate/timer";
 import {AppOutcome} from "../../../interfaces/app";
 import {intersection} from "lodash";
 import {unpack} from "../../../primitives/yaku-compat";
@@ -189,6 +188,3 @@ function getRiichiUsers(state: IAppState, playerIdMap: PMap): Player[] {
   }
 }
 
-
-getCurrentTimerZone = () => getCurrentTimerZone(this, this._yellowZoneAlreadyPlayed);
-isTimerWaiting = () => timerIsWaiting();
